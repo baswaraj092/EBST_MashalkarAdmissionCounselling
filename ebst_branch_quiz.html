@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EBST Engineering Branch Selection Quiz</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #2c3e50; }
+    .question { margin-bottom: 15px; }
+    .options input { margin-right: 10px; }
+    button { padding: 10px 15px; background-color: #27ae60; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    button:hover { background-color: #219150; }
+    #result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<h1>EBST Engineering Branch Selection Quiz</h1>
+<p>Answer the following questions honestly to find out which EBST branch best suits you. Ratings: 1 (Strongly Disagree) to 5 (Strongly Agree).</p>
+<form id="quizForm">
+    <div id="quiz"></div>
+    <button type="button" onclick="calculateScore()">Submit</button>
+</form>
+<div id="result"></div>
+
+<script>
+const questions = [
+    "I enjoy understanding how circuits and electronic devices work.",
+    "I’m curious about how medical devices like ECG, MRI, or pacemakers function.",
+    "I like learning about how software controls hardware devices.",
+    "I’m fascinated by how mobile networks, satellites, and wireless systems work.",
+    "I like solving practical problems using technology.",
+    "I can solve physics and math problems with ease.",
+    "I enjoy coding or logical reasoning puzzles.",
+    "I can focus for long periods on detailed, technical work.",
+    "I can quickly learn to operate new devices or software.",
+    "I can think of multiple ways to solve a technical problem.",
+    "I want a career in high-tech industries like telecom, IT, healthcare tech, or R&D.",
+    "I am willing to keep learning new technologies throughout my career.",
+    "I want a job that allows me to work internationally.",
+    "I like both theory and hands-on lab work.",
+    "I am interested in blending knowledge from multiple fields.",
+    "I enjoy working with sensors, robotics, and automation systems.",
+    "I have a strong interest in human biology and medical science.",
+    "I like designing and optimizing software for real-world applications.",
+    "I am excited about 5G, IoT, and future communication technologies.",
+    "I prefer projects that combine electronics, coding, and innovation."
+];
+
+const quizContainer = document.getElementById("quiz");
+
+questions.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.classList.add("question");
+    div.innerHTML = `<p>${i+1}. ${q}</p>`;
+    const options = document.createElement("div");
+    options.classList.add("options");
+    for (let j = 1; j <= 5; j++) {
+        options.innerHTML += `<label><input type='radio' name='q${i}' value='${j}'>${j}</label>`;
+    }
+    div.appendChild(options);
+    quizContainer.appendChild(div);
+});
+
+function calculateScore() {
+    let score = 0;
+    let categoryScores = { electronics: 0, biomedical: 0, software: 0, telecom: 0 };
+    let allAnswered = true;
+
+    questions.forEach((_, i) => {
+        const selected = document.querySelector(`input[name='q${i}']:checked`);
+        if (selected) {
+            let val = parseInt(selected.value);
+            score += val;
+            if ([0,4,5,9,14,19].includes(i)) categoryScores.electronics += val;
+            if ([1,16].includes(i)) categoryScores.biomedical += val;
+            if ([2,6,17,19].includes(i)) categoryScores.software += val;
+            if ([3,10,18].includes(i)) categoryScores.telecom += val;
+        } else {
+            allAnswered = false;
+        }
+    });
+
+    if (!allAnswered) {
+        alert("Please answer all questions.");
+        return;
+    }
+
+    let mainBranch = Object.keys(categoryScores).reduce((a, b) => categoryScores[a] > categoryScores[b] ? a : b);
+
+    let branchExplanation = {
+        electronics: "You have a strong interest in how electronic systems work and enjoy creating and improving devices. Electronics Engineering offers careers in hardware design, automation, and embedded systems.",
+        biomedical: "You are curious about combining technology with medicine to improve healthcare. Biomedical Engineering allows you to work on life-saving medical devices and research.",
+        software: "You excel in coding, problem-solving, and creating applications. Software Engineering provides opportunities in AI, app development, and systems programming.",
+        telecom: "You are fascinated by global communication networks and future tech like 5G and IoT. Telecommunication Engineering leads to careers in networking, satellites, and wireless systems."
+    };
+
+    let summary = "";
+    if (score >= 80) {
+        summary = "Strong fit for EBST — you show high aptitude and interest in technology-driven fields.";
+    } else if (score >= 60) {
+        summary = "Good fit — you have potential for EBST, with some areas to strengthen.";
+    } else {
+        summary = "Moderate fit — you might enjoy certain aspects of EBST but explore other branches too.";
+    }
+
+    document.getElementById("result").innerHTML = `<strong>Your Score:</strong> ${score} <br><strong>Recommended Branch:</strong> ${mainBranch.toUpperCase()}<br><em>${branchExplanation[mainBranch]}</em><br><br><strong>Summary:</strong> ${summary}`;
+}
+</script>
+</body>
+</html>
